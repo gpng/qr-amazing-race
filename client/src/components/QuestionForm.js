@@ -52,7 +52,7 @@ let QuestionForm = props => {
           onClick={this.handleSubmit}
           disabled={submitting}
         >
-          Submit Team Number
+          Submit Answer
         </Button>
       </FlexView>
     </form>

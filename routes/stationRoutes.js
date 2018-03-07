@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const to = require('await-to-js').to;
 
-const passwords = require('../config/passwords').passwords;
+const passwords = require('../config/game').passwords;
+const order = require('../config/game').order;
 const Stations = mongoose.model('station');
 
 module.exports = app => {
@@ -71,14 +72,36 @@ module.exports = app => {
       res.send({ success: false, data: 'error connecting to database' });
     }
     if (existingStation) {
-      res.send({
-        success: true,
-        data: {
-          question: existingStation.question,
-          answers: existingStation.answers,
-          team
+      const nextStationIndex =
+        order[team - 1].indexOf(existingStation.stationNumber) + 1;
+      const nextStationNumber = order[team - 1][nextStationIndex];
+      let nextStation;
+      [err, nextStation] = await to(
+        Stations.findOne({
+          stationNumber: nextStationNumber
+        })
+      );
+      if (err) {
+        console.log(err);
+        res.send({ success: false, data: 'error connecting to database' });
+      }
+      if (nextStation) {
+        if (nextStation.teams.indexOf(team) === -1) {
+          nextStation.teams.push(team);
+          nextStation.save();
         }
-      });
+        res.send({
+          success: true,
+          data: {
+            hint: nextStation.hint
+          }
+        });
+      } else {
+        res.send({
+          success: true,
+          data: 'congratulations'
+        });
+      }
     } else {
       res.send({
         success: false,
