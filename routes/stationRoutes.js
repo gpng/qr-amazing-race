@@ -99,7 +99,7 @@ module.exports = app => {
       } else {
         res.send({
           success: true,
-          data: 'congratulations'
+          data: { hint: 'congratulations' }
         });
       }
     } else {

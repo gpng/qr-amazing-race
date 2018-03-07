@@ -8,6 +8,7 @@ import { withStyles } from 'material-ui/styles';
 import * as actions from '../actions';
 import PasswordForm from '../components/PasswordForm';
 import QuestionForm from '../components/QuestionForm';
+import DisplayHint from '../components/DisplayHint';
 
 // style imports
 
@@ -24,10 +25,9 @@ class MainContainer extends Component {
       status: 'password',
       team: 0,
       question: '',
-      answers: []
+      answers: [],
+      hint: ''
     };
-
-    console.log(window.location.pathname);
   }
 
   handlePasswordSubmit = async values => {
@@ -37,7 +37,6 @@ class MainContainer extends Component {
     };
     const res = await this.props.verifyPassword(req);
     if (res.success) {
-      console.log(res.data);
       this.setState({
         status: 'question',
         team: res.data.team,
@@ -57,15 +56,11 @@ class MainContainer extends Component {
     };
     const res = await this.props.verifyAnswer(req);
     if (res.success) {
-      console.log(res.data);
-      // this.setState({
-      //   status: 'question',
-      //   team: res.data.team,
-      //   question: res.data.question,
-      //   answers: res.data.answers
-      // });
+      this.setState({
+        status: 'hint',
+        hint: res.data.hint
+      });
     } else {
-      console.log(res.data);
     }
   };
 
@@ -81,6 +76,8 @@ class MainContainer extends Component {
             answers={this.state.answers}
           />
         );
+      case 'hint':
+        return <DisplayHint hint={this.state.hint} team={this.state.team} />;
       default:
         return null;
     }
