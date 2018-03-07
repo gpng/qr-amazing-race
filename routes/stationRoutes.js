@@ -172,4 +172,30 @@ module.exports = app => {
       res.send({ success: false, data: [] });
     }
   });
+
+  app.get('/api/results', async (req, res) => {
+    let err, result;
+    [err, result] = await to(Activity.find());
+    if (err) {
+      console.log('error getting activities', err);
+      res.send({
+        success: false,
+        data: 'error connecting to database'
+      });
+    }
+    if (result) {
+      let resArr = [];
+      for (let i = 1; i <= passwords.length; i++) {
+        let teamActivities = result.filter(x => x.team === i);
+        resArr.push({
+          team: i,
+          right_answers: teamActivities.filter(x => x.correct === true).length,
+          wrong_answers: teamActivities.filter(x => x.correct === false).length
+        });
+      }
+      res.send({ success: true, data: resArr });
+    } else {
+      res.send({ success: false, data: [] });
+    }
+  });
 };
