@@ -4,6 +4,7 @@ const to = require('await-to-js').to;
 const passwords = require('../config/game').passwords;
 const order = require('../config/game').order;
 const Stations = mongoose.model('station');
+const Activity = mongoose.model('activity');
 
 module.exports = app => {
   app.get('/', (req, res) => {
@@ -90,6 +91,11 @@ module.exports = app => {
           nextStation.teams.push(team);
           nextStation.save();
         }
+        logActivity({
+          uuid: station_id,
+          team: team,
+          correct: true
+        });
         res.send({
           success: true,
           data: {
@@ -103,10 +109,67 @@ module.exports = app => {
         });
       }
     } else {
+      logActivity({
+        uuid: station_id,
+        team: team,
+        correct: false
+      });
       res.send({
         success: false,
         data: 'wrong answer'
       });
+    }
+  });
+
+  /**
+   * Resets all teams to [] except station 0
+   */
+  app.get('/reset', async (req, res) => {
+    let err, stations;
+    [err, stations] = await to(Stations.find());
+    res.send('reset');
+    stations.forEach(station => {
+      if (station.stationNumber !== 0) {
+        station.teams = [];
+        station.save();
+      }
+    });
+  });
+
+  const logActivity = async activity => {
+    console.log(activity);
+    let err, station;
+    [err, station] = await to(
+      Stations.findOne({
+        uuid: activity.uuid
+      })
+    );
+    if (err) {
+      console.log('error', err);
+    }
+    if (station) {
+      Activity.create({
+        station: station.stationNumber,
+        correct: activity.correct,
+        team: activity.team
+      });
+    }
+  };
+
+  app.get('/api/activity', async (req, res) => {
+    let err, result;
+    [err, result] = await to(Activity.find());
+    if (err) {
+      console.log('error getting activities', err);
+      res.send({
+        success: false,
+        data: 'error connecting to database'
+      });
+    }
+    if (result) {
+      res.send({ success: true, data: result });
+    } else {
+      res.send({ success: false, data: [] });
     }
   });
 };

@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const keys = require('./config/keys');
 
 require('./models/Stations');
+require('./models/Activity');
 
 mongoose.connect(keys.mongoURI);
 

@@ -20,3 +20,12 @@ export const verifyAnswer = formData => async dispatch => {
   }
   return { success: res.data.success, data: res.data.data };
 };
+
+export const getAllActivity = () => async dispatch => {
+  let err, res;
+  [err, res] = await to(axios.get('/api/activity'));
+  if (err) {
+    return { success: false, data: 'error' };
+  }
+  return { success: res.data.success, data: res.data.data };
+};

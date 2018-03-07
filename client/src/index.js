@@ -15,6 +15,7 @@ import reducers from './reducers';
 // style imports
 import 'react-flexview/lib/flexView.css';
 import './index.css';
+import 'react-table/react-table.css';
 
 const store = createStore(reducers, {}, applyMiddleware(reduxThunk));
 
