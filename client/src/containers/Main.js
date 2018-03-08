@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import FlexView from 'react-flexview';
 import { withStyles } from 'material-ui/styles';
+import { ToastContainer, toast } from 'react-toastify';
 
 // local imports
 import * as actions from '../actions';
 import PasswordForm from '../components/PasswordForm';
 import QuestionForm from '../components/QuestionForm';
 import DisplayHint from '../components/DisplayHint';
-import Snackbar from '../components/Snackbar';
 
 // style imports
 
@@ -27,9 +27,7 @@ class MainContainer extends Component {
       team: 0,
       question: '',
       answers: [],
-      hint: '',
-      message: 'test message',
-      toggleSnackbar: true
+      hint: ''
     };
   }
 
@@ -47,7 +45,7 @@ class MainContainer extends Component {
         answers: res.data.answers
       });
     } else {
-      this.handleSnackbarToggle(res.data);
+      toast.error(res.data);
     }
   };
 
@@ -64,17 +62,9 @@ class MainContainer extends Component {
         hint: res.data.hint
       });
     } else {
-      this.handleSnackbarToggle(res.data);
+      toast.error(res.data);
     }
   };
-
-  handleSnackbarToggle = message => {
-    this.setState({
-      toggleSnackbar: !this.state.toggleSnackbar,
-      message
-    });
-  };
-
   renderContent = () => {
     switch (this.state.status) {
       case 'password':
@@ -99,11 +89,11 @@ class MainContainer extends Component {
 
     return (
       <FlexView column grow className={classes.root}>
-        {this.renderContent()}
-        <Snackbar
-          message={this.state.message}
-          toggle={this.state.toggleSnackbar}
+        <ToastContainer
+          position={toast.POSITION.BOTTOM_CENTER}
+          autoClose={1500}
         />
+        {this.renderContent()}
       </FlexView>
     );
   }
