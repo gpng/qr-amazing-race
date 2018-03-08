@@ -10,6 +10,7 @@ import * as actions from '../actions';
 import PasswordForm from '../components/PasswordForm';
 import QuestionForm from '../components/QuestionForm';
 import DisplayHint from '../components/DisplayHint';
+import SimpleAppBar from '../components/AppBar';
 
 // style imports
 
@@ -89,11 +90,11 @@ class MainContainer extends Component {
 
     return (
       <FlexView column grow className={classes.root}>
-        <ToastContainer
-          position={toast.POSITION.BOTTOM_CENTER}
-          autoClose={1500}
-        />
-        {this.renderContent()}
+        <SimpleAppBar />
+        <ToastContainer position={toast.POSITION.TOP_CENTER} autoClose={1500} />
+        <FlexView column style={{ marginTop: 56 }}>
+          {this.renderContent()}
+        </FlexView>
       </FlexView>
     );
   }
