@@ -33,7 +33,9 @@ const DisplayHint = props => {
           : 'The clue for your next station is:'}
       </Typography>
       <Typography className={classes.text}>
-        {hint === 'congratulations' ? '' : hint}
+        {hint === 'congratulations'
+          ? 'Please proceed back to OCBC Campus Level 3 by 3pm.'
+          : hint}
       </Typography>
     </FlexView>
   );
