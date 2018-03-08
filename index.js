@@ -1,4 +1,7 @@
 const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const keys = require('./config/keys');
@@ -8,12 +11,15 @@ require('./models/Activity');
 
 mongoose.connect(keys.mongoURI);
 
-const app = express();
-
 app.use(bodyParser.json());
 
+// socket
+io.on('connection', socket => {
+  console.log('new client connected');
+});
+
 // register routes
-require('./routes/stationRoutes')(app);
+require('./routes/stationRoutes')(app, io);
 
 if (process.env.NODE_ENV === 'production') {
   const path = require('path');
@@ -25,4 +31,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT);
+server.listen(PORT);

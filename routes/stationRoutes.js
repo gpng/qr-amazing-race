@@ -7,7 +7,7 @@ const Stations = mongoose.model('station');
 const Activity = mongoose.model('activity');
 const shuffle = require('lodash/shuffle');
 
-module.exports = app => {
+module.exports = (app, io) => {
   app.get('/', (req, res) => {
     res.send('hello world');
   });
@@ -104,6 +104,11 @@ module.exports = app => {
           }
         });
       } else {
+        logActivity({
+          uuid: station_id,
+          team: team,
+          correct: true
+        });
         res.send({
           success: true,
           data: { hint: 'congratulations' }
@@ -138,7 +143,6 @@ module.exports = app => {
   });
 
   const logActivity = async activity => {
-    console.log(activity);
     let err, station;
     [err, station] = await to(
       Stations.findOne({
@@ -149,6 +153,7 @@ module.exports = app => {
       console.log('error', err);
     }
     if (station) {
+      io.emit('NewActivity');
       Activity.create({
         station: station.stationNumber,
         correct: activity.correct,
