@@ -12,7 +12,6 @@ import ReactTable from 'react-table';
  */
 const DisplayActivity = props => {
   const { data } = props;
-  console.log(data);
   const columns = [
     {
       Header: 'Station',
