@@ -5,6 +5,7 @@ const passwords = require('../config/game').passwords;
 const order = require('../config/game').order;
 const Stations = mongoose.model('station');
 const Activity = mongoose.model('activity');
+const shuffle = require('lodash/shuffle');
 
 module.exports = app => {
   app.get('/', (req, res) => {
@@ -35,7 +36,7 @@ module.exports = app => {
           success: true,
           data: {
             question: existingStation.question,
-            answers: existingStation.answers,
+            answers: shuffle(existingStation.answers),
             team
           }
         });
