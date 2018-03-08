@@ -21,7 +21,7 @@ const DisplayActivity = props => {
     {
       id: 'correct',
       Header: 'Correct',
-      accessor: d => d.correct.toString()
+      accessor: d => (d.correct ? 'correct' : 'wrong')
     },
     {
       Header: 'Team',
