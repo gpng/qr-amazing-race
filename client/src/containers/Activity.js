@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import FlexView from 'react-flexview';
 import { withStyles } from 'material-ui/styles';
+import socketIOClient from 'socket.io-client';
 
 // local imports
 import * as actions from '../actions';
@@ -26,6 +27,15 @@ class ActivityContainer extends Component {
 
   componentWillMount = async () => {
     this.getAllActivity();
+    console.log(process.env.NODE_ENV);
+    let socketUri;
+    if (process.env.NODE_ENV === 'production') {
+      socketUri = 'https://ctbtownhall.herokuapp.com';
+    } else {
+      socketUri = 'http://localhost:5000';
+    }
+    const socket = socketIOClient(socketUri);
+    socket.on('NewActivity', this.getAllActivity);
   };
 
   getAllActivity = async () => {
