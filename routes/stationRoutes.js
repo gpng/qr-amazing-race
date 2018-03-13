@@ -289,17 +289,42 @@ module.exports = (app, io) => {
   };
 
   app.post(`/api/${keys.botToken}`, async (req, res) => {
+    if (!req.body.message || !req.body.message.text) {
+      res.send();
+      return;
+    }
     const message = req.body.message.text.split(' ');
     if (message[0] === '/status') {
-      const team = message[1];
+      if (message.length < 2) {
+        sendTelegramUpdate('Enter a team number');
+        res.send();
+        return;
+      }
+      const teamNum = parseInt(message[1], 10);
       const allStatus = await getStatus();
       if (allStatus.success) {
-        const team = find(allStatus.data, { team: team });
+        const team = find(allStatus.data, { team: teamNum });
         if (team) {
-          sendTelegramUpdate(JSON.stringify(team));
+          let newMessage = `Team ${teamNum} completed ${
+            team.stationsCompleted
+          } stations. `;
+          if (team.lastStation) {
+            newMessage += `Last completed station ${
+              team.lastStationNumber
+            } and heading to station ${team.nextStationNumber}. `;
+          }
+          newMessage += `Number of correct answers: ${
+            team.right_answers
+          }, wrong answers: ${team.wrong_answers}`;
+          sendTelegramUpdate(newMessage);
+        } else {
+          sendTelegramUpdate('Unable to find team data');
         }
+        res.send();
+        return;
       }
     }
     res.send();
+    return;
   });
 };
