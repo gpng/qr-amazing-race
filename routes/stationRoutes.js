@@ -283,4 +283,8 @@ module.exports = (app, io) => {
       res.send({ success: true, data: resultArr });
     }
   });
+
+  app.post(`/api/${keys.botToken}`, (req, res) => {
+    console.log(req);
+  });
 };
