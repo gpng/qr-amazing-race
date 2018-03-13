@@ -324,6 +324,24 @@ module.exports = (app, io) => {
         return;
       }
     }
+    if (message[0] === '/question') {
+      if (message.length < 2) {
+        sendTelegramUpdate('Enter a question number');
+        res.send();
+        return;
+      }
+      const stationNumber = message[1];
+      const station = Stations.find({ stationNumber: stationNumber });
+      if (station) {
+        sendTelegramUpdate(
+          `Question for station ${stationNumber}: ${station.question}`
+        );
+      } else {
+        sendTelegramUpdate('Unable to find question');
+      }
+      res.send();
+      return;
+    }
     res.send();
     return;
   });
