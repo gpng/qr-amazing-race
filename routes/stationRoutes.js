@@ -229,16 +229,20 @@ module.exports = (app, io) => {
   };
 
   app.get('/api/status', async (req, res) => {
+    res.send(await getStatus());
+  });
+
+  const getStatus = async () => {
     let err,
       result,
       resultArr = [];
     [err, result] = await to(Stations.find());
     if (err) {
       console.log('erring getting stations', err);
-      res.send({
+      return {
         success: false,
         data: 'error connecting to database'
-      });
+      };
     }
     if (result) {
       for (let i = 0; i < order.length; i++) {
@@ -280,16 +284,21 @@ module.exports = (app, io) => {
           };
         }
       }
-      res.send({ success: true, data: resultArr });
+      return { success: true, data: resultArr };
     }
-  });
+  };
 
-  app.post(`/api/${keys.botToken}`, (req, res) => {
-    console.log(req.body.message);
-    const message = req.body.message.text.split();
-    console.log(message);
+  app.post(`/api/${keys.botToken}`, async (req, res) => {
+    const message = req.body.message.text.split(' ');
     if (message[0] === '/status') {
-      console.log(`team ${message[1]}`);
+      const team = message[1];
+      const allStatus = await getStatus();
+      if (allStatus.success) {
+        const team = find(allStatus.data, { team: team });
+        if (team) {
+          sendTelegramUpdate(JSON.stringify(team));
+        }
+      }
     }
     res.send();
   });
