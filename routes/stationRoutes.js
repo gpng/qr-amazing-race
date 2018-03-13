@@ -286,6 +286,10 @@ module.exports = (app, io) => {
 
   app.post(`/api/${keys.botToken}`, (req, res) => {
     console.log(req.body.message);
+    const message = req.body.message.text.split();
+    if (message[0] === '/status') {
+      console.log(`team ${message[1]}`);
+    }
     res.send();
   });
 };
