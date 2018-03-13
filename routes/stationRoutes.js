@@ -286,5 +286,6 @@ module.exports = (app, io) => {
 
   app.post(`/api/${keys.botToken}`, (req, res) => {
     console.log(req.body.message);
+    res.send();
   });
 };
