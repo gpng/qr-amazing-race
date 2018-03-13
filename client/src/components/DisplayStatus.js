@@ -19,6 +19,18 @@ const DisplayStatus = props => {
       accessor: 'team'
     },
     {
+      Header: 'Completed',
+      accessor: 'stationsCompleted'
+    },
+    {
+      Header: 'Right Answers',
+      accessor: 'right_answers'
+    },
+    {
+      Header: 'Wrong Answers',
+      accessor: 'wrong_answers'
+    },
+    {
       Header: 'Last Station Number',
       accessor: 'lastStationNumber'
     },

@@ -6,7 +6,9 @@ const shuffle = require('lodash/shuffle');
 const forEachRight = require('lodash/forEachRight');
 const find = require('lodash/find');
 const includes = require('lodash/includes');
+const axios = require('axios');
 
+const keys = require('../config/keys');
 const passwords = require('../config/game').passwords;
 const order = require('../config/game').order;
 
@@ -100,6 +102,11 @@ module.exports = (app, io) => {
           team: team,
           correct: true
         });
+        sendTelegramUpdate(
+          `Team ${team} has completed station ${
+            existingStation.stationNumber
+          }. Heading to station ${nextStationNumber}`
+        );
         res.send({
           success: true,
           data: {
@@ -112,6 +119,7 @@ module.exports = (app, io) => {
           team: team,
           correct: true
         });
+        sendTelegramUpdate(`Team ${team} has completed station all stations.`);
         res.send({
           success: true,
           data: { hint: 'congratulations' }
@@ -129,6 +137,14 @@ module.exports = (app, io) => {
       });
     }
   });
+
+  const sendTelegramUpdate = message => {
+    const url = `https://api.telegram.org/bot${keys.botToken}/sendMessage`;
+    axios.post(url, {
+      chat_id: keys.chatId,
+      text: message
+    });
+  };
 
   /**
    * Resets all teams to [] except station 0
@@ -183,14 +199,18 @@ module.exports = (app, io) => {
   });
 
   app.get('/api/results', async (req, res) => {
+    res.send(await getResults());
+  });
+
+  const getResults = async () => {
     let err, result;
     [err, result] = await to(Activity.find());
     if (err) {
       console.log('error getting activities', err);
-      res.send({
+      return {
         success: false,
         data: 'error connecting to database'
-      });
+      };
     }
     if (result) {
       let resArr = [];
@@ -202,11 +222,11 @@ module.exports = (app, io) => {
           wrong_answers: teamActivities.filter(x => x.correct === false).length
         });
       }
-      res.send({ success: true, data: resArr });
+      return { success: true, data: resArr };
     } else {
-      res.send({ success: false, data: [] });
+      return { success: false, data: [] };
     }
-  });
+  };
 
   app.get('/api/status', async (req, res) => {
     let err,
@@ -241,6 +261,7 @@ module.exports = (app, io) => {
             }
             resultArr.push({
               team: team,
+              stationsCompleted: index,
               lastStationNumber: lastStation.stationNumber,
               lastStationQuestion: lastStation.question,
               nextStationNumber: nextStation.stationNumber,
@@ -249,6 +270,15 @@ module.exports = (app, io) => {
             return false;
           }
         });
+      }
+      const currentResults = await getResults();
+      if (currentResults.success && currentResults.data) {
+        for (let i = 0; i < resultArr.length; i++) {
+          resultArr[i] = {
+            ...resultArr[i],
+            ...currentResults.data[i]
+          };
+        }
       }
       res.send({ success: true, data: resultArr });
     }
