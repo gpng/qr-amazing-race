@@ -331,7 +331,7 @@ module.exports = (app, io) => {
         return;
       }
       const stationNumber = message[1];
-      const station = await Stations.find({ stationNumber: stationNumber });
+      const station = await Stations.findOne({ stationNumber: stationNumber });
       if (station) {
         sendTelegramUpdate(
           `Question for station ${stationNumber}: ${station.question}`
