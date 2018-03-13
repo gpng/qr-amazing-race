@@ -308,6 +308,7 @@ module.exports = (app, io) => {
           let newMessage = `Team ${teamNum} completed ${
             team.stationsCompleted
           } stations. `;
+          console.log(team);
           if (team.lastStationNumber && team.lastStationNumber >= 0) {
             newMessage += `Last completed station ${
               team.lastStationNumber
