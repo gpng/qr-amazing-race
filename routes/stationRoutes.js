@@ -308,7 +308,7 @@ module.exports = (app, io) => {
           let newMessage = `Team ${teamNum} completed ${
             team.stationsCompleted
           } stations. `;
-          if (team.lastStation) {
+          if (team.lastStationNumber) {
             newMessage += `Last completed station ${
               team.lastStationNumber
             } and heading to station ${team.nextStationNumber}. `;
