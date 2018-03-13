@@ -7,7 +7,7 @@ import socketIOClient from 'socket.io-client';
 
 // local imports
 import * as actions from '../actions';
-import DisplayActivity from '../components/DisplayActivity';
+import DisplayStatus from '../components/DisplayStatus';
 
 // style imports
 
@@ -17,16 +17,16 @@ const styles = theme => ({
   }
 });
 
-class ActivityContainer extends Component {
+class StatusContainer extends Component {
   constructor() {
     super();
     this.state = {
-      activities: []
+      status: []
     };
   }
 
   componentWillMount = async () => {
-    this.getAllActivity();
+    this.getStatus();
     let socketUri;
     if (process.env.NODE_ENV === 'production') {
       socketUri = 'https://ctbtownhall.herokuapp.com';
@@ -34,14 +34,14 @@ class ActivityContainer extends Component {
       socketUri = 'http://localhost:5000';
     }
     const socket = socketIOClient(socketUri);
-    socket.on('NewActivity', this.getAllActivity);
+    socket.on('NewActivity', this.getStatus);
   };
 
-  getAllActivity = async () => {
-    const res = await this.props.getAllActivity();
+  getStatus = async () => {
+    const res = await this.props.getStatus();
     if (res.success) {
       this.setState({
-        activities: res.data
+        status: res.data
       });
     }
   };
@@ -51,12 +51,12 @@ class ActivityContainer extends Component {
 
     return (
       <FlexView column grow className={classes.root}>
-        <DisplayActivity data={this.state.activities} />
+        <DisplayStatus data={this.state.status} />
       </FlexView>
     );
   }
 }
 
 export default withStyles(styles, { withTheme: true })(
-  connect(null, actions)(ActivityContainer)
+  connect(null, actions)(StatusContainer)
 );

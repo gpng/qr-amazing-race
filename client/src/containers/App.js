@@ -8,6 +8,7 @@ import FlexView from 'react-flexview';
 import * as actions from '../actions';
 import Main from './Main';
 import Activity from './Activity';
+import Status from './Status';
 
 // style imports
 
@@ -18,8 +19,8 @@ class App extends Component {
         <FlexView grow>
           <Switch>
             <Route exact path="/activity" component={Activity} />
+            <Route exact path="/status" component={Status} />
             <Route path="/" component={Main} />
-            {/* <Route path="/" component={Header} /> */}
           </Switch>
         </FlexView>
       </BrowserRouter>

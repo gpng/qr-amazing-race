@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 const to = require('await-to-js').to;
-
-const passwords = require('../config/game').passwords;
-const order = require('../config/game').order;
 const Stations = mongoose.model('station');
 const Activity = mongoose.model('activity');
 const shuffle = require('lodash/shuffle');
+const forEachRight = require('lodash/forEachRight');
+const find = require('lodash/find');
+const includes = require('lodash/includes');
+
+const passwords = require('../config/game').passwords;
+const order = require('../config/game').order;
 
 module.exports = (app, io) => {
   app.get('/', (req, res) => {
@@ -202,6 +205,52 @@ module.exports = (app, io) => {
       res.send({ success: true, data: resArr });
     } else {
       res.send({ success: false, data: [] });
+    }
+  });
+
+  app.get('/api/status', async (req, res) => {
+    let err,
+      result,
+      resultArr = [];
+    [err, result] = await to(Stations.find());
+    if (err) {
+      console.log('erring getting stations', err);
+      res.send({
+        success: false,
+        data: 'error connecting to database'
+      });
+    }
+    if (result) {
+      for (let i = 0; i < order.length; i++) {
+        const team = i + 1;
+        let lastStation, nextStation;
+        forEachRight(order[i], (stationNo, index) => {
+          const station = find(result, { stationNumber: stationNo });
+          if (station && includes(station.teams, team)) {
+            nextStation = station;
+            if (index === 0) {
+              lastStation = {
+                lastStationNumber: '',
+                lastStationQuestion: ''
+              };
+            } else {
+              const lastStationNumber = order[i][index - 1];
+              lastStation = find(result, {
+                stationNumber: lastStationNumber
+              });
+            }
+            resultArr.push({
+              team: team,
+              lastStationNumber: lastStation.stationNumber,
+              lastStationQuestion: lastStation.question,
+              nextStationNumber: nextStation.stationNumber,
+              nextStationQuestion: nextStation.question
+            });
+            return false;
+          }
+        });
+      }
+      res.send({ success: true, data: resultArr });
     }
   });
 };

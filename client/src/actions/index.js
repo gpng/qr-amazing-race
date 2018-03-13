@@ -29,3 +29,12 @@ export const getAllActivity = () => async dispatch => {
   }
   return { success: res.data.success, data: res.data.data };
 };
+
+export const getStatus = () => async dispatch => {
+  let err, res;
+  [err, res] = await to(axios.get('/api/status'));
+  if (err) {
+    return { success: false, data: 'error getting status' };
+  }
+  return { success: res.data.success, data: res.data.data };
+};
