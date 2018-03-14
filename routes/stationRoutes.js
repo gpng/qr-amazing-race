@@ -216,16 +216,52 @@ module.exports = (app, io) => {
       let resArr = [];
       for (let i = 1; i <= passwords.length; i++) {
         let teamActivities = result.filter(x => x.team === i);
+        const firstTiming = getTimeDiffBetweenStations(i, teamActivities, 1, 2);
+        const secondTiming = getTimeDiffBetweenStations(
+          i,
+          teamActivities,
+          3,
+          4
+        );
+        let completed = false;
+        if (
+          find(teamActivities, {
+            correct: true,
+            station: order[i - 1][order[i - 1].length - 1]
+          })
+        ) {
+          completed = true;
+        }
         resArr.push({
           team: i,
           right_answers: teamActivities.filter(x => x.correct === true).length,
-          wrong_answers: teamActivities.filter(x => x.correct === false).length
+          wrong_answers: teamActivities.filter(x => x.correct === false).length,
+          total_timing:
+            firstTiming && secondTiming ? firstTiming + secondTiming : null,
+          completed: completed
         });
       }
       return { success: true, data: resArr };
     } else {
       return { success: false, data: [] };
     }
+  };
+
+  const getTimeDiffBetweenStations = (teamNo, teamActivities, start, end) => {
+    const startStation = find(teamActivities, {
+      correct: true,
+      station: order[teamNo - 1][start]
+    });
+    const endStation = find(teamActivities, {
+      correct: true,
+      station: order[teamNo - 1][end]
+    });
+    if (startStation && endStation) {
+      return (
+        new Date(endStation.created_at) - new Date(startStation.created_at)
+      );
+    }
+    return null;
   };
 
   app.get('/api/status', async (req, res) => {
@@ -278,6 +314,12 @@ module.exports = (app, io) => {
       const currentResults = await getResults();
       if (currentResults.success && currentResults.data) {
         for (let i = 0; i < resultArr.length; i++) {
+          if (currentResults.data[i].completed) {
+            resultArr[i].lastStationQuestion = resultArr[i].nextStationQuestion;
+            resultArr[i].lastStationNumber = resultArr[i].nextStationNumber;
+            resultArr[i].nextStationQuestion = '';
+            resultArr[i].nextStationNumber = '';
+          }
           resultArr[i] = {
             ...resultArr[i],
             ...currentResults.data[i]
