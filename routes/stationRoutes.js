@@ -344,15 +344,15 @@ module.exports = (app, io) => {
       res.send();
       return;
     }
+    if (
+      req.body.message.new_chat_members &&
+      req.body.message.new_chat_members.length > 0
+    ) {
+      sendTelegramUpdate(
+        'Available Commands:\n/status <team no.> for team status\n/question <station no.> for question and answer'
+      );
+    }
     res.send();
     return;
   });
-  if (
-    req.body.message.new_chat_members &&
-    req.body.message.new_chat_members.length > 0
-  ) {
-    sendTelegramUpdate(
-      'Available Commands:\n/status <team no.> for team status\n/question <station no.> for question and answer'
-    );
-  }
 };
