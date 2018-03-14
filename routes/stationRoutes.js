@@ -365,9 +365,14 @@ module.exports = (app, io) => {
             team.stationsCompleted
           } stations. `;
           if (team.lastStationNumber || team.lastStationNumber >= 0) {
-            newMessage += `Last completed station ${
-              team.lastStationNumber
-            } and heading to station ${team.nextStationNumber}. `;
+            newMessage += `Last completed station ${team.lastStationNumber} `;
+            if (team.nextStationNumber !== '') {
+              newMessage += `and heading to station ${
+                team.nextStationNumber
+              }. `;
+            } else {
+              newMessage == `and heading to campus 301. `;
+            }
           }
           newMessage += `Number of correct answers: ${
             team.right_answers
