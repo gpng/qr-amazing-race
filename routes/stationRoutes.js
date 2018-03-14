@@ -347,4 +347,9 @@ module.exports = (app, io) => {
     res.send();
     return;
   });
+  if (message.new_chat_members && message.new_chat_members.length > 0) {
+    sendTelegramUpdate(
+      'Available Commands:\n/status <team no.> for team status\n/question <station no.> for question and answer'
+    );
+  }
 };
