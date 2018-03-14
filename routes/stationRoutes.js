@@ -289,6 +289,20 @@ module.exports = (app, io) => {
   };
 
   app.post(`/api/${keys.botToken}`, async (req, res) => {
+    if (!req.body.message) {
+      res.send();
+      return;
+    }
+    if (
+      req.body.message.new_chat_members &&
+      req.body.message.new_chat_members.length > 0
+    ) {
+      sendTelegramUpdate(
+        'Available Commands:\n/status <team no.> for team status\n/question <station no.> for question and answer'
+      );
+      res.send();
+      return;
+    }
     if (!req.body.message || !req.body.message.text) {
       res.send();
       return;
@@ -343,14 +357,6 @@ module.exports = (app, io) => {
       }
       res.send();
       return;
-    }
-    if (
-      req.body.message.new_chat_members &&
-      req.body.message.new_chat_members.length > 0
-    ) {
-      sendTelegramUpdate(
-        'Available Commands:\n/status <team no.> for team status\n/question <station no.> for question and answer'
-      );
     }
     res.send();
     return;
