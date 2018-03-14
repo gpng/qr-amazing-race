@@ -371,7 +371,7 @@ module.exports = (app, io) => {
                 team.nextStationNumber
               }. `;
             } else {
-              newMessage == `and heading to campus 301. `;
+              newMessage += `and heading to campus 301. `;
             }
           }
           newMessage += `Number of correct answers: ${
