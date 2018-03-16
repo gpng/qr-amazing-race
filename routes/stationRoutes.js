@@ -373,7 +373,10 @@ module.exports = (app, io) => {
           }
           newMessage += `Number of correct answers: ${
             team.right_answers
-          }, wrong answers: ${team.wrong_answers}`;
+          }, wrong answers: ${team.wrong_answers}. `;
+          if (team.total_timing) {
+            newMessage += `Total time taken: ${team.total_timing}ms`;
+          }
           sendTelegramUpdate(newMessage);
         } else {
           sendTelegramUpdate('Unable to find team data');
