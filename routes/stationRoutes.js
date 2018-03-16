@@ -6,6 +6,7 @@ const shuffle = require('lodash/shuffle');
 const forEachRight = require('lodash/forEachRight');
 const find = require('lodash/find');
 const includes = require('lodash/includes');
+const range = require('lodash/range');
 const axios = require('axios');
 
 const keys = require('../config/keys');
@@ -157,6 +158,9 @@ module.exports = (app, io) => {
       if (station.stationNumber !== 0) {
         station.teams = [];
         station.save();
+      } else {
+        station.teams = range(1, 26);
+        station.save();
       }
     });
   });
@@ -216,13 +220,7 @@ module.exports = (app, io) => {
       let resArr = [];
       for (let i = 1; i <= passwords.length; i++) {
         let teamActivities = result.filter(x => x.team === i);
-        const firstTiming = getTimeDiffBetweenStations(i, teamActivities, 1, 2);
-        const secondTiming = getTimeDiffBetweenStations(
-          i,
-          teamActivities,
-          3,
-          4
-        );
+        const firstTiming = getTimeDiffBetweenStations(i, teamActivities, 1, 7);
         let completed = false;
         if (
           find(teamActivities, {
@@ -408,4 +406,18 @@ module.exports = (app, io) => {
     res.send();
     return;
   });
+
+  // app.get('/shuffle', (req, res) => {
+  //   const list = [1, 2, 3, 4, 5, 6];
+  //   let resultList = [];
+  //   for (let i = 0; i < 25; i++) {
+  //     let shuffled = shuffle(list);
+  //     while (resultList.indexOf(shuffled) > 0) {
+  //       shuffled = shuffle(list);
+  //     }
+  //     resultList.push(shuffled);
+  //   }
+  //   console.log(resultList);
+  //   res.send(resultList);
+  // });
 };
