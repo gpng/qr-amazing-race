@@ -234,8 +234,7 @@ module.exports = (app, io) => {
           team: i,
           right_answers: teamActivities.filter(x => x.correct === true).length,
           wrong_answers: teamActivities.filter(x => x.correct === false).length,
-          total_timing:
-            firstTiming && secondTiming ? firstTiming + secondTiming : null,
+          total_timing: firstTiming || null,
           completed: completed
         });
       }
