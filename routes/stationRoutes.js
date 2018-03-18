@@ -230,12 +230,33 @@ module.exports = (app, io) => {
         ) {
           completed = true;
         }
+        // count points for answers
+        let points = 0;
+        if (teamActivities.filter(x => x.correct === true).length > 0) {
+          order[i - 1].forEach(question => {
+            const questionActivity = teamActivities.filter(
+              x => x.station === question
+            );
+            if (questionActivity) {
+              let thisPoints = 10;
+              questionActivity.forEach(ans => {
+                if (thisPoints > 0) {
+                  if (!ans.correct) {
+                    thisPoints -= 5;
+                  }
+                }
+              });
+              points += thisPoints;
+            }
+          });
+        }
         resArr.push({
           team: i,
           right_answers: teamActivities.filter(x => x.correct === true).length,
           wrong_answers: teamActivities.filter(x => x.correct === false).length,
           total_timing: firstTiming || null,
-          completed: completed
+          completed: completed,
+          points: points
         });
       }
       return { success: true, data: resArr };
@@ -337,7 +358,7 @@ module.exports = (app, io) => {
       req.body.message.new_chat_members.length > 0
     ) {
       sendTelegramUpdate(
-        'Available Commands:\n/status <team no.> for team status\n/question <station no.> for question and answer'
+        'Available Commands:\n/status <team no.> for team status\n/question <station no.> for question and answer\n/password <team no.> for password'
       );
       res.send();
       return;
@@ -401,6 +422,26 @@ module.exports = (app, io) => {
         );
       } else {
         sendTelegramUpdate('Unable to find question');
+      }
+      res.send();
+      return;
+    }
+    if (message[0] === '/password') {
+      if (message.length < 2) {
+        sendTelegramUpdate('Enter a team number');
+        res.send();
+        return;
+      }
+      const teamNumber = message[1];
+      if (teamNumber > passwords.length) {
+        sendTelegramUpdate('Unable to find team');
+        res.send();
+      }
+      const password = passwords[teamNumber - 1];
+      if (password) {
+        sendTelegramUpdate(`Password for team ${teamNumber} is: ${password}`);
+      } else {
+        sendTelegramUpdate('Unable to find team');
       }
       res.send();
       return;

@@ -49,6 +49,10 @@ const DisplayStatus = props => {
       Cell: row => <div style={{ whiteSpace: 'normal' }}>{row.value}</div>
     },
     {
+      Header: 'Answer Points',
+      accessor: 'points'
+    },
+    {
       Header: 'Time Taken (ms)',
       accessor: 'total_timing'
     }
