@@ -29,7 +29,7 @@ class StatusContainer extends Component {
     this.getStatus();
     let socketUri;
     if (process.env.NODE_ENV === 'production') {
-      socketUri = 'https://ctbtownhall.herokuapp.com';
+      socketUri = 'https://<your url>.herokuapp.com';
     } else {
       socketUri = 'http://localhost:5000';
     }

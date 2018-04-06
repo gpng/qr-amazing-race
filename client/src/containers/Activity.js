@@ -29,8 +29,9 @@ class ActivityContainer extends Component {
     this.getAllActivity();
     let socketUri;
     if (process.env.NODE_ENV === 'production') {
-      socketUri = 'https://ctbtownhall.herokuapp.com';
+      socketUri = 'https://<your url>.herokuapp.com';
     } else {
+      // for testing
       socketUri = 'http://localhost:5000';
     }
     const socket = socketIOClient(socketUri);

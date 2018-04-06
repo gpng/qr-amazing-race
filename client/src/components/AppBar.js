@@ -15,7 +15,7 @@ const SimpleAppBar = props => {
       <AppBar position="fixed" color="default">
         <Toolbar>
           <Typography variant="title" color="inherit">
-            CTB Treasure Hunt
+            QR Amazing Race
           </Typography>
         </Toolbar>
       </AppBar>
